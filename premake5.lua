@@ -1,8 +1,8 @@
-workspace "WorkspaceName"
+workspace "Raytracing"
     configurations { "Debug", "Release" }
     platforms { "Win64" }
 
-project "ProjectName"
+project "Raytracing"
     kind "ConsoleApp"
     language "C++"
     targetdir "bin/%{cfg.buildcfg}"
