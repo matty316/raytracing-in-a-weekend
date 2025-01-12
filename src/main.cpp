@@ -3,7 +3,27 @@
 #include "color.h"
 #include <iostream>
 
+double hitSphere(const point3& center, double radius, const ray& r) {
+	vec3 oc = center - r.origin();
+	auto a = r.direction().lengthSquared();
+	auto h = dot(r.direction(), oc);
+	auto c = oc.lengthSquared() - radius * radius;
+	auto discriminant = h * h - a * c;
+
+	if (discriminant < 0) {
+		return -1.0;
+	}
+	else {
+		return (h - std::sqrt(discriminant)) / a;
+	}
+}
+
 color rayColor(const ray& r) {
+	auto t = hitSphere(point3(0, 0, -1), 0.5, r);
+	if (t > 0.0) {
+		vec3 N = unitVector(r.at(t) - vec3(0, 0, -1));
+		return 0.5 * color(N.x() + 1, N.y() + 1, N.z() + 1);
+	}
 	vec3 unitDirection = unitVector(r.direction());
 	auto a = 0.5 * (unitDirection.y() + 1.0);
 	return (1.0 - a) * color(1.0, 1.0, 1.0) + a * color(0.5, 0.7, 1.0);
