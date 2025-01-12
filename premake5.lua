@@ -5,6 +5,7 @@ workspace "Raytracing"
 project "Raytracing"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++23"
     targetdir "bin/%{cfg.buildcfg}"
 
     files { "include/**.h", "src/**.c", "src/**.cpp" }
