@@ -1,12 +1,14 @@
 #pragma once
 
 #include "hittable.h"
+#include "material.h"
 
 class camera {
 public:
 	double aspectRatio = 1.0;
 	int imageWidth = 100;
 	int samplesPerPixel = 10;
+	int maxDepth = 10;
 
 	void render(const hittable& world) {
 		initialize();
@@ -19,7 +21,7 @@ public:
 				color pixelColor{ 0, 0, 0 };
 				for (int sample = 0; sample < samplesPerPixel; sample++) {
 					ray r = getRay(i, j);
-					pixelColor += rayColor(r, world);
+					pixelColor += rayColor(r, maxDepth, world);
 				}
 				writeColor(std::cout, pixelSamplesScale * pixelColor);
 			}
@@ -73,11 +75,21 @@ private:
 		return vec3(randomDouble() - 0.5, randomDouble() - 0.5, 0);
 	}
 
-	color rayColor(const ray& r, const hittable& world) const {
+	color rayColor(const ray& r, int depth, const hittable& world) const {
+		if (depth <= 0)
+			return color(0, 0, 0);
+
 		hitRecord rec;
 
-		if (world.hit(r, interval(0, infinity), rec)) {
-			return 0.5 * (rec.normal + color(1, 1, 1));
+		if (world.hit(r, interval(0.001, infinity), rec)) {
+			ray scattered;
+			color attenuation;
+			if (rec.mat->scatter(r, rec, attenuation, scattered)) {
+				auto rayColorNew = rayColor(scattered, depth - 1, world);
+				auto color = attenuation * rayColorNew;
+				return color;
+			}
+			return color(0, 0, 0);
 		}
 
 		vec3 unitDirection = unitVector(r.direction());
