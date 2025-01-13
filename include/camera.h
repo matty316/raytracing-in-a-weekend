@@ -9,6 +9,8 @@ public:
 	int imageWidth = 100;
 	int samplesPerPixel = 10;
 	int maxDepth = 10;
+    
+    double vfov = 90;
 
 	void render(const hittable& world) {
 		initialize();
@@ -46,7 +48,9 @@ private:
 		center = point3(0, 0, 0);
 
 		auto focalLength = 1.0;
-		auto viewportHeight = 2.0;
+        auto theta = degreesToRadian(vfov);
+        auto h = std::tan(theta / 2);
+        auto viewportHeight = 2 * h * focalLength;
 		auto viewportWidth = viewportHeight * (double(imageWidth) / imageHeight);
 
 		auto viewportU = vec3(viewportWidth, 0, 0);
